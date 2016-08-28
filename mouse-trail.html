@@ -1,0 +1,54 @@
+<style>
+  .trail { /* className for the trail elements */
+    position: absolute;
+    height: 6px; width: 6px;
+    border-radius: 3px;
+    background: teal;
+  }
+  body {
+    height: 300px;
+  }
+</style>
+
+<body>
+  <div style="background: grey; width: 1024px; height: 768px">
+  </div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+  <div class="trail"></div>
+</body>
+
+<script>
+  // Your code here.
+  var lastCoords = [ 0, 0 ];
+
+  addEventListener("mousemove", moved);
+
+  function moved(event){
+    var deltaX = event.pageX - lastCoords[0];
+    var deltaY = event.pageY - lastCoords[1];
+
+    var trails = document.body.querySelectorAll("div.trail");
+
+    for( var i = 0; i < trails.length; i++ ){
+      var curX = event.pageX - (deltaX/trails.length)*i;
+      var curY = event.pageY - (deltaY/trails.length)*i;
+
+      //console.log( "Posn: " + curX + ", " + curY );
+      trails[i].style.left = curX;
+      trails[i].style.top = curY;
+    }
+
+    lastCoords[0] = event.pageX;
+    lastCoords[1] = event.pageY;
+  }
+
+
+</script>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<head>
+  <style>
+    /* Defines a cleaner look for tables */
+    table  { border-collapse: collapse; }
+    td, th { border: 1px solid black; padding: 3px 8px; }
+    th     { text-align: left; }
+  </style>
+</head>
+
+<body>
+  <!-- empty -->
+  <p> Placeholder text </p>
+  <p> Blah blah blah </p>
+</body>
+
+<script>
+var MOUNTAINS = [
+  {name: "Kilimanjaro", height: 5895, country: "Tanzania"},
+  {name: "Everest", height: 8848, country: "Nepal"},
+  {name: "Mount Fuji", height: 3776, country: "Japan"},
+  {name: "Mont Blanc", height: 4808, country: "Italy/France"},
+  {name: "Vaalserberg", height: 323, country: "Netherlands"},
+  {name: "Denali", height: 6168, country: "United States"},
+  {name: "Popocatepetl", height: 5465, country: "Mexico"}
+];
+
+if (typeof module != "undefined" && module.exports)
+  module.exports = MOUNTAINS;
+
+
+function buildTable(data) {
+  var retString = "";
+  //document.body.push( "<table>" );
+
+  var tableObj = document.createElement('table');
+  //retString += "<table>";
+    retString += "<tr>";
+    for( var fieldName in data[0] ){
+      //document.body.push( "<th>" + fieldName + "</th>" );
+      retString += "<th>" + fieldName + "</th>";
+    }
+    retString += "<tr>";
+    retString += "\n";
+
+    for( var line in data ){
+      retString += "<tr>";
+      for( var memberName in data[line]){
+        //document.body.push( "<td>" + line[fieldName] + "</td>" );
+        retString += "<td>" + data[line][memberName] + "</td>"
+      }
+      retString += "</tr>";
+      retString += "\n";
+    }
+  //document.body.push( "</table>" );
+  retString += "</table>";
+  console.log( retString );
+  tableObj.innerHTML = retString;
+  //retNode = document.createTextNode(retString);
+  return tableObj;
+}
+
+document.body.appendChild(buildTable(MOUNTAINS));
+</script>

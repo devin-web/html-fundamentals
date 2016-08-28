@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+  <link rel="stylesheet" href="css/platformer.css">
+</style>
+
+<body>
+  <canvas width="600" height="200"></canvas>
+  <script>
+    var cx = document.querySelector("canvas").getContext("2d");
+
+
+    function drawTrapezoid( maxWidth, minWidth, height, posnX, posnY ){
+      cx.save();
+      cx.beginPath();
+      cx.moveTo( posnX, posnY );
+      cx.lineTo( posnX + 0.5 * (maxWidth - minWidth), posnY - height );
+      cx.lineTo( posnX + 0.5 * (maxWidth - minWidth) + minWidth, posnY - height );
+      cx.lineTo( posnX + maxWidth, posnY );
+      cx.lineTo( posnX, posnY );
+      cx.stroke();
+      cx.restore();
+    }
+
+    drawTrapezoid( 50, 30, 30, 20, 50 );
+
+
+    function drawRedDiamond( size, posnX, posnY ) {
+      cx.save();
+      cx.rotate(.25*Math.PI);
+      cx.translate( posnX*0.5 + posnY*0.5,  posnX*-0.5 + posnY*0.5 );
+      cx.fillStyle = "rgb(255, 0, 0)";
+      cx.fillRect(0, 0, size, size  );
+      cx.restore();
+    }
+
+    drawRedDiamond( 50, 170, 30 );
+
+    function drawZigZag( numZigZags, zigZagSpacing, zigZagWidth, posnX, posnY ){
+      cx.save();
+      cx.beginPath();
+      cx.moveTo( posnX, posnY );
+      for(var i=0; i<numZigZags; i++){
+        cx.lineTo( posnX + zigZagWidth, posnY + zigZagSpacing*(i-1) + 0.5*zigZagSpacing );
+        cx.lineTo( posnX, posnY + zigZagSpacing*i );
+      }
+      cx.stroke();
+      cx.restore();
+    }
+
+    drawZigZag( 15, 10, 50, 200, 30 );
+
+    var spiralSegs = 100;
+    function drawSpiral( posnX, posnY ){
+      cx.save();
+
+      cx.restore();
+    }
+  </script>
+</body>

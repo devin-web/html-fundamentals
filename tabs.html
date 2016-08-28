@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+</style>
+
+<body>
+  <div id="wrapper">
+    <div data-tabname="one">Tab one</div>
+    <div data-tabname="two">Tab two</div>
+    <div data-tabname="three">Tab three</div>
+  </div>
+
+  <script>
+    allNodeType1 = [];
+
+    function asTabs(node) {
+      nodeChildren = node.childNodes;
+      for( var i = 0; i < nodeChildren.length; i++ ){
+        if( nodeChildren[i].nodeType == 1 ){
+          allNodeType1.push(nodeChildren[i]);
+        }
+      }
+      forEach( node1 in allNodeType1 ){
+        var btn = document.createElement("button");
+        var txt = document.createTexTNode( node1.getAttribute("data-tabname") );
+        btn.appendChild( txt );
+        allNodeType1.appendChild( btn );
+      }
+
+    }
+    asTabs(document.querySelector("#wrapper"));
+  </script>
+</body>
+</html>

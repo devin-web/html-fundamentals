@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+
+</head>
+
+<body>
+  <h1>Heading with a <span>span</span> element.</h1>
+  <p>A paragraph with <span>one</span>, <span>two</span> spans.</p>
+</body>
+
+<script>
+  function byTagName(node, tagName) {
+    lastIndex = 0;
+
+    var nodeTxt = node.innerHTML;
+    var matchArray = [];
+    var tagRegex = new RegExp("<[^\/]?\s*" + tagName + "\s*>", "ig");
+    var match;
+
+    console.log( nodeTxt );
+
+    while (match = tagRegex.exec( nodeTxt )){
+      console.log("Found", match[1], "at", match.index);
+      matchArray.push(match);
+    }
+    return matchArray;
+  }
+
+  var h1Search = byTagName(document.body, "h1");
+  console.log(h1Search.length);
+  // → 1
+  var spanSearch = byTagName(document.body, "span");
+  console.log(spanSearch.length);
+  // → 3
+  var para = document.querySelector("p");
+  var spanParaSearch = byTagName(para, "span");
+  console.log(spanParaSearch.length);
+  // → 2
+  var newPara = document.createElement("p");
+  newPara.innerHTML = "Number of h1 tags: " + String(h1Search.length) + ". ";
+  newPara.innerHTML += "Number of span tags: " + String(spanSearch.length) + ". ";
+  newPara.innerHTML += "Number of span tags inside para tags: " + String(spanParaSearch.length) + ".";
+  document.body.appendChild( newPara );
+
+</script>
