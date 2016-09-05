@@ -64,9 +64,9 @@
       cx.beginPath();
       // center=100,100, radius=100
       // from current angle, clockwise by slice's angle
-      cx.arc(100, 100, 100,
+      cx.arc(200, 200, 100,
               currentAngle, currentAngle + sliceAngle);
-      cx.lineTo(100, 100);
+      cx.lineTo(200, 200);
       cx.fillStyle = result.color;
       cx.fill();
 
@@ -74,10 +74,17 @@
       //cx.lineTo(250, count*50 );
       //cx.strokeStyle = result.color;
       cx.lineWidth = 5;
-      cx.fillRect(225, 50*count+5, 25, 25);
-
-      cx.font = "20px Georgia";
-      cx.fillText(result.name, 255, 50*(count+.5));
+      //cx.fillRect(225, 50*count+5, 25, 25);
+      cx.textBaseline = "middle";
+      if( Math.cos(currentAngle + sliceAngle*0.5) > 0.0 ){
+        cx.textAlign = "right";
+      }
+      else
+      {
+        cx.textAlign = "left";
+      }
+      cx.font = "15px Georgia";
+      cx.fillText(result.name, 200 + 180*Math.cos(currentAngle + sliceAngle*0.5), 200 + 135*Math.sin(currentAngle + sliceAngle*0.5));
 
       currentAngle += sliceAngle;
       count++;

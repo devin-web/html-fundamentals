@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<style>
+</style>
+
+<body>
+  <p id="intro">
+    Hello World!
+  </p>
+
+  <p id="info">
+    JavaScript on The DOM
+  </p>
+
+  <script type="text/javascript">
+    var elm;
+    document.getElementById("intro").innerHTML = "Intro: Hello World!";
+
+    function findInfoToAlert(){
+      elm = document.getElementById("info");
+      alert(elm.innerHTML);
+      alert("Test");
+
+      elm.innerHTML = "Blah blah blah";
+    }
+
+    findInfoToAlert();
+
+  </script>
+</body>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+</style>
+<body>
+  <canvas width="400" height="400"></canvas>
+  <script type="text/javascript">
+    var cx = document.querySelector("canvas").getContext("2d");
+
+    var lastTime = null;
+    function frame(time) {
+      if (lastTime != null)
+        updateAnimation(Math.min(100, time - lastTime) / 1000);
+      lastTime = time;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    var epsilon = 0.0001;
+
+    function Vector(x, y) {
+      this.x = x; this.y = y;
+    }
+    Vector.prototype.plus = function(other) {
+      return new Vector(this.x + other.x, this.y + other.y);
+    };
+    Vector.prototype.subtract = function(other){
+      return new Vector(this.x - other.x, this.y - other.y);
+    }
+    Vector.prototype.times = function(factor) {
+      return new Vector(this.x * factor, this.y * factor);
+    };
+    Vector.prototype.normalize = function() {
+      var factor = Math.sqrt(this.x * this.x + this.y * this.y);
+
+      this.x = this.x/factor;
+      this.y = this.y/factor;
+    }
+    Vector.prototype.isEqual = function(other){
+      if( Math.abs(other.x - this.x) > epsilon ){
+        return false;
+      }
+      if( Math.abs(other.y - this.y) > epsilon ){
+        return false;
+      }
+      return true;
+    }
+    Vector.prototype.boxBound = function( minX, minY, maxX, maxY ){
+      /*
+      console.log( "this ", this.x, ", ", this.y, " box bound ",
+                            minX, ", ", minY, ", ", maxX, ", ", maxY );
+      */
+      var newX = this.x;
+      var newY = this.y;
+
+      if( this.x < minX ){
+        newX = minX;
+      }
+      else if( this.x > maxX ){
+        newX = maxX;
+      }
+      if( this.y < minY ){
+        newY = minY;
+      }
+      else if( this.y > maxY ){
+        newY = maxY;
+      }
+      return new Vector( newX, newY );
+    }
+
+    function DoubleVector( vectorA, vectorB ){
+      this.vector1 = new Vector( vectorA.x, vectorA.y );
+      this.vector2 = new Vector( vectorB.x, vectorB.y );
+    }
+
+    var inited = false;
+    var boxSize = new Vector( 300, 300 );
+    var ballPosn = new Vector( 0, 0 );
+    var ballVelocity = new Vector( 0, 0 );
+    var ballRadius = 10.0;
+    var velocityScale = 160;
+
+    function updateAnimation(step) {
+
+      if( !inited )
+      {
+        initAnimation();
+        inited = true;
+      }
+      animate( step );
+      clearScreen();
+      drawScreen();
+    }
+
+    function initAnimation(){
+      //console.log( "posnX: ", ballPosn.x, "posnY: ", ballPosn.y );
+      ballPosn = boxSize.times( Math.random() );
+      //console.log( "posnX: ", ballPosn.x, "posnY: ", ballPosn.y );
+      ballVelocity = new Vector( Math.random(), Math.random() );
+      ballVelocity.normalize();
+      ballVelocity = ballVelocity.subtract( new Vector( 0.5, 0.5 ));
+      ballVelocity = ballVelocity.times( velocityScale );
+    }
+
+    function animate( step ){
+      var deltaBall = ballVelocity.times( step );
+      //console.log( "deltaX: ", deltaBall.x, "deltaY: ", deltaBall.y );
+      //console.log( "posnX: ", this.ballPosn.x, "posnY: ", this.ballPosn.y );
+
+      var newBallPosn = this.ballPosn.plus( deltaBall );
+      var doubleVector = collideChecks( this.ballPosn, newBallPosn, ballRadius );
+      this.ballPosn = doubleVector.vector1;
+      this.ballVelocity = doubleVector.vector2;
+      this.ballVelocity.normalize();
+      this.ballVelocity = this.ballVelocity.times( velocityScale );
+      //console.log( "posnX: ", this.ballPosn.x, "posnY: ", this.ballPosn.y );
+    }
+
+    function collideChecks( startPosn, endPosn, curBallradius ){
+      startPosn = startPosn.boxBound( curBallradius, curBallradius, boxSize.x - curBallradius, boxSize.y - curBallradius ); //just in case it starts out of bounds
+      var newPosn = new Vector( endPosn.x, endPosn.y );
+      newPosn = newPosn.boxBound( curBallradius, curBallradius, boxSize.x - curBallradius, boxSize.y - curBallradius )
+
+      var startEndVect = endPosn.subtract( startPosn );
+      var remainderVect = new Vector( 0.0, 0.0 );
+      var remainderPosn = new Vector( 0.0, 0.0 );
+
+      if( newPosn.isEqual(endPosn) )
+      {
+        /*
+        console.log( "no bounds violated newPosn(x,y): (", newPosn.x, ", ", newPosn.y,
+                                      ") endPosn(x,y): (", endPosn.x, ", ", endPosn.y );
+        */
+        var returnVal = new DoubleVector(  endPosn, startEndVect );
+        return returnVal;
+      }
+      else //some bound has been violated
+      {
+        console.log("bounds violated");
+
+        if( endPosn.x < curBallradius ){
+          console.log("x bounds < violated");
+          remainderPosn.x = curBallradius;
+          remainderVect.x = -startEndVect.x
+        }
+        else if( endPosn.x > boxSize.x-curBallradius ){
+          console.log("x bounds > violated");
+          remainderPosn.x = boxSize.x-curBallradius;
+          remainderVect.x =  -startEndVect.x;//(endPosn.x - remainderPosn.x);
+        }
+        else {
+          remainderPosn.x =  endPosn.x;
+          remainderVect.x = startEndVect.x;
+        }
+
+
+        if( endPosn.y < curBallradius ){
+          console.log("y bounds < violated");
+          remainderPosn.y = curBallradius;
+          remainderVect.y = -startEndVect.y;
+        }
+        else if( endPosn.y > boxSize.y-curBallradius ){
+          console.log("y bounds > violated");
+          remainderPosn.y = boxSize.y-curBallradius;
+          remainderVect.y = -startEndVect.y; //(endPosn.y - remainderPosn.y);
+        }
+        else {
+          remainderPosn.y = endPosn.y;
+          remainderVect.y = startEndVect.y;
+        }
+      }
+      remainderPosn.plus( remainderVect );
+      console.log( remainderVect.x, ", ", remainderVect.y );
+      var returnVal = new DoubleVector( remainderPosn, remainderVect );
+      return returnVal;
+    }
+
+    function clearScreen(){
+      cx.fillStyle = "black";
+      cx.fillRect(0,0, boxSize.x, boxSize.y);
+    }
+
+    function drawScreen(){
+        cx.fillStyle = "red";
+      // cx.fillCircle( ballPosn.x, ballPosn.y, ballRadius );
+        cx.beginPath();
+        // center x, y, radius angle=0 to 7
+        cx.arc( ballPosn.x, ballPosn.y, ballRadius, 0, 7);
+
+        cx.fill();
+    }
+
+
+  </script>
+</body>

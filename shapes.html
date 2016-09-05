@@ -5,7 +5,7 @@
 </style>
 
 <body>
-  <canvas width="600" height="200"></canvas>
+  <canvas width="1024" height="600"></canvas>
   <script>
     var cx = document.querySelector("canvas").getContext("2d");
 
@@ -50,11 +50,165 @@
 
     drawZigZag( 15, 10, 50, 200, 30 );
 
-    var spiralSegs = 100;
+    var spiralSegs = 100.0;
+    var segsPerSpiral = 25.0;
+    var fepsilon = 0.0001;
+
     function drawSpiral( posnX, posnY ){
       cx.save();
+      cx.beginPath();
+      cx.moveTo( posnX, posnY );
 
+      /*
+      cx.lineTo( posnX + 3, posnY + 3 );
+      cx.lineTo( posnX - 3, posnY + 3 );
+      cx.lineTo( posnX - 3, posnY - 3 );
+
+      cx.moveTo( posnX, posnY );
+      */
+      //var lastIcount = spiralSegs*5.0 / segsPerSpiral;
+      var shouldUpdate = true;
+      var spiralRatio = segsPerSpiral/spiralSegs;
+      var spiralSpacingMag = segsPerSpiral/1.0;
+      //for(var i = spiralSegs*spiralSpacingMag / segsPerSpiral; i > -1; i-= spiralSpacingMag ){
+      for(var i = 0; i < spiralSegs*spiralSpacingMag / segsPerSpiral; i+= spiralSpacingMag ){
+        //for( var j = segsPerSpiral; j > -1; j-=1.0){
+        for( var j = 0; j < segsPerSpiral; j+=1.0){
+          /*
+          cx.lineTo( posnX + (i+lastIcount*j/segsPerSpiral)*Math.cos( (j / segsPerSpiral) * 2.0 * Math.PI ),
+                     posnY + (i+lastIcount*j/segsPerSpiral)*Math.sin( (j / segsPerSpiral) * 2.0 * Math.PI )
+                     );
+          */
+          var oldX;
+          var oldY;
+          if( shouldUpdate )
+          {
+            oldX = newX;
+            oldY = newY;
+          }
+
+          var newX = posnX + spiralRatio * (i + j + spiralSpacingMag) * Math.cos(j/(segsPerSpiral) * 2.0 * Math.PI);
+          var newY = posnY + spiralRatio * (i + j + spiralSpacingMag) * Math.sin(j/(segsPerSpiral) * 2.0 * Math.PI);
+
+          if( Math.abs( oldY - newY ) < fepsilon ){
+            shouldUpdate = false;
+            continue;
+          }
+          else
+          {
+            shouldUpdate = true;
+          }
+          cx.lineTo( newX, newY);
+
+
+          //console.log( "X: ", newX,  //posnX + (i + j) * Math.cos(j/segsPerSpiral * 2.0 * Math.PI),
+          //             "Y: ", newY );//posnY + (i + j) * Math.sin(j/segsPerSpiral * 2.0 * Math.PI) );
+
+          /*
+          console.log( "X: ", posnX + (i+lastIcount*j/segsPerSpiral)*Math.cos( (j / segsPerSpiral) * 2.0 * Math.PI ),
+                       "Y: ", posnY + (i+lastIcount*j/segsPerSpiral)*Math.sin( (j / segsPerSpiral) * 2.0 * Math.PI ));
+          */
+        }
+        lastIcount = i;
+      }
+
+      /*
+      cx.moveTo(posnX+100.0, posnY+100.0);
+      cx.lineTo(posnX+100.0, posnY+200.0);
+      cx.lineTo(posnX+200.0, posnY+200.0);
+      */
+
+      cx.stroke();
       cx.restore();
     }
+
+    drawSpiral( 310.0, 70.0 );
+
+    function pow( value, exponent ){
+      var retVal = 1.0;
+      while( exponent > 0.0){
+        retVal = retVal * value;
+        exponent-=1.0;
+      }
+      return retVal;
+    }
+
+    var hermiteSteps = 100.0;
+    function hermiteCurve( point1x, point1y, point2x, point2y, tangent1x, tangent1y, tangent2x, tangent2y ){
+      cx.moveTo( point1x, point1y );                            // move pen to startpoint
+      for (var t=0; t < hermiteSteps; t++)
+      {
+        var s = t / hermiteSteps;    // scale s to go from 0 to 1
+        var h1 =  2*pow(s, 3) - 3*pow(s, 2) + 1;          // calculate basis function 1
+        var h2 = -2*pow(s, 3) + 3*pow(s, 2);              // calculate basis function 2
+        var h3 =  pow(s, 3) - 2*pow(s, 2) + s;         // calculate basis function 3
+        var h4 =  pow(s, 3) -  pow(s, 2);              // calculate basis function 4
+        var pX = h1*point1x +                    // multiply and sum all funtions
+                 h2*point2x +                    // together to build the interpolated
+                 h3*tangent1x +                    // point along the curve.
+                 h4*tangent2x;
+        var pY = h1*point1y +                    // multiply and sum all funtions
+                 h2*point2y +                    // together to build the interpolated
+                 h3*tangent1y +                    // point along the curve.
+                 h4*tangent2y;
+        cx.lineTo(pX, pY);                            // draw to calculated point on the curve
+      }
+    }
+
+    function drawStar( sections, radius, posnX, posnY ){
+      cx.save();
+      cx.beginPath();
+      cx.moveTo( posnX, posnY );
+      //sections = 4;
+      for( var i = 0; i < sections; i++ ){
+        // control1=(10,10) control2=(90,10) goal=(50,90)
+
+
+        //        cx.moveTo( posnX, posnY );
+
+        //cx.bezierCurveTo( posnX, posnY, posnX, posnY,
+        //  posnX + radius*Math.cos(i/sections * 2.0*Math.PI),
+        //  posnY + radius*Math.sin(i/sections * 2.0*Math.PI));
+
+
+        //cx.moveTo( posnX, posnY );
+/*
+        cx.fillStyle = "rgb(255, 0, 0)";
+        cx.fillRect( posnX + radius*Math.cos(i/sections * 2.0*Math.PI),
+                     posnY + radius*Math.sin(i/sections * 2.0*Math.PI),
+                     5.0, 5.0  );
+        cx.fillRect(  posnX + radius*Math.cos((i+1)/sections * 2.0*Math.PI),
+                      posnY + radius*Math.sin((i+1)/sections * 2.0*Math.PI),
+                      5.0, 5.0  );
+        cx.fillStyle = "rgb(0, 0, 255)";
+        cx.fillRect( posnX,
+                     posnY,
+                     5.0, 5.0  );
+        cx.fillStyle = "rgb(0, 255, 0)";
+        cx.fillRect( posnX + radius*2.0*Math.cos((i+1)/sections * 2.0*Math.PI),
+                     posnY + radius*2.0*Math.sin((i+1)/sections * 2.0*Math.PI),
+                     5.0, 5.0  );
+*/
+
+        hermiteCurve(   posnX + radius*Math.cos(i/sections * 2.0*Math.PI),
+                        posnY + radius*Math.sin(i/sections * 2.0*Math.PI),
+                        posnX + radius*Math.cos((i+1)/sections * 2.0*Math.PI),
+                        posnY + radius*Math.sin((i+1)/sections * 2.0*Math.PI),
+                        -2.0 * radius*Math.cos(i/sections * 2.0*Math.PI),//0.0,//posnX,// - radius*Math.cos(i/sections * 2.0*Math.PI),
+                        -2.0 * radius*Math.sin(i/sections * 2.0*Math.PI),//0.0,//posnY,// - radius*Math.sin(i/sections * 2.0*Math.PI),
+                        2.0 * radius*Math.cos((i+1)/sections * 2.0*Math.PI),// - posnX,
+                        2.0 * radius*Math.sin((i+1)/sections * 2.0*Math.PI)// - posnY
+                         );
+        cx.lineTo( posnX, posnY );
+
+      }
+      cx.fillStyle = "gold";//"rgb(255, 255, 0.0)";
+      cx.fill();
+      //cx.stroke();
+      cx.restore();
+    }
+
+    drawStar( 8.0, 50.0, 400.0, 150.0 )
+
   </script>
 </body>

@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<style>
+</style>
+
+<body>
+  <p id="intro">
+    Hello World!
+  </p>
+
+  <p id="info">
+    JavaScript on The DOM
+  </p>
+
+  <script type="text/javascript">
+    var onlyWords = [];
+    var elms = document.getElementsByTagName("p");
+
+    function elmsToWords( elements, wordArray  ){
+      for( var i = 0; i < elements.length; i++ ){
+        var curString = elements[i].innerHTML;
+        var newWords = curString.split(" ");
+
+        for( var j = 0; j < newWords.length; j++ ){
+          if( /\S+/.test(newWords[j]) )
+            wordArray.push( newWords[j] );
+        }
+      }
+    }
+
+    elmsToWords( elms, onlyWords );
+
+    function wordDump( wordArray ){
+      for( var i = 0; i < wordArray.length; i++ ){
+        console.log( wordArray[i] );
+      }
+    }
+
+    wordDump( onlyWords );
+  </script>
+</body>
