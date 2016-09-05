@@ -136,15 +136,15 @@
       }
       else //some bound has been violated
       {
-        console.log("bounds violated");
+        //console.log("bounds violated");
 
         if( endPosn.x < curBallradius ){
-          console.log("x bounds < violated");
+          //console.log("x bounds < violated");
           remainderPosn.x = curBallradius;
           remainderVect.x = -startEndVect.x
         }
         else if( endPosn.x > boxSize.x-curBallradius ){
-          console.log("x bounds > violated");
+          //console.log("x bounds > violated");
           remainderPosn.x = boxSize.x-curBallradius;
           remainderVect.x =  -startEndVect.x;//(endPosn.x - remainderPosn.x);
         }
@@ -155,12 +155,12 @@
 
 
         if( endPosn.y < curBallradius ){
-          console.log("y bounds < violated");
+          //console.log("y bounds < violated");
           remainderPosn.y = curBallradius;
           remainderVect.y = -startEndVect.y;
         }
         else if( endPosn.y > boxSize.y-curBallradius ){
-          console.log("y bounds > violated");
+          //console.log("y bounds > violated");
           remainderPosn.y = boxSize.y-curBallradius;
           remainderVect.y = -startEndVect.y; //(endPosn.y - remainderPosn.y);
         }
@@ -170,7 +170,7 @@
         }
       }
       remainderPosn.plus( remainderVect );
-      console.log( remainderVect.x, ", ", remainderVect.y );
+      //console.log( remainderVect.x, ", ", remainderVect.y );
       var returnVal = new DoubleVector( remainderPosn, remainderVect );
       return returnVal;
     }
